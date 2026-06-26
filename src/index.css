@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #020617;
+  color: #e2e8f0;
+  overflow-x: hidden;
+}
+
+/* Wave Animation Background */
+.ocean-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  background: linear-gradient(180deg, #020617 0%, #082f49 40%, #0c4a6e 100%);
+}
+
+.wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C150,120 350,0 600,60 C850,120 1050,0 1200,60 L1200,120 L0,120 Z' fill='rgba(14,165,233,0.08)'/%3E%3C/svg%3E") repeat-x;
+  background-size: 50% 100%;
+  animation: wave 10s linear infinite;
+}
+
+.wave-2 {
+  bottom: 20px;
+  animation: wave 12s linear infinite reverse;
+  opacity: 0.6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C150,0 350,120 600,60 C850,0 1050,120 1200,60 L1200,120 L0,120 Z' fill='rgba(14,165,233,0.05)'/%3E%3C/svg%3E");
+}
+
+.wave-3 {
+  bottom: 40px;
+  animation: wave 15s linear infinite;
+  opacity: 0.4;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,60 C200,100 400,20 600,60 C800,100 1000,20 1200,60 L1200,120 L0,120 Z' fill='rgba(14,165,233,0.03)'/%3E%3C/svg%3E");
+}
+
+@keyframes wave {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(14, 165, 233, 0.4);
+  border-radius: 50%;
+  animation: float-particle 8s ease-in-out infinite;
+}
+
+@keyframes float-particle {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  50% { transform: translateY(-30px) translateX(10px); opacity: 0.8; }
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(14, 165, 233, 0.15);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(14, 165, 233, 0.4);
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.1);
+  transform: translateY(-4px);
+}
+
+/* Glow text */
+.glow-text {
+  text-shadow: 0 0 20px rgba(14, 165, 233, 0.5), 0 0 40px rgba(14, 165, 233, 0.2);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+::-webkit-scrollbar-thumb {
+  background: #0c4a6e;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #075985;
+}
+
+/* Rank badge colors */
+.rank-leader {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
+}
+.rank-officer {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+}
+.rank-member {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+.rank-recruit {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+}
+
+/* Button shine */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+.btn-shine:hover::before {
+  left: 100%;
+}
