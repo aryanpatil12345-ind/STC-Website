@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Send, CheckCircle, AlertCircle, MessageSquare } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import config from '../data/config.json';
 
 interface FormData {
   username: string;
@@ -35,48 +35,50 @@ export default function JoinSection() {
     setErrorMsg('');
 
     try {
-      const { error } = await supabase.from('applications').insert({
-        username: formData.username,
-        level: formData.level,
-        bounty: formData.bounty,
-        build: formData.build,
-        division: formData.division,
-        reason: formData.reason,
-      });
-
-      if (error) {
-        setStatus('error');
-        setErrorMsg(error.message);
-        return;
+      if (!config.discord.webhookUrl || config.discord.webhookUrl.includes('your-webhook')) {
+        throw new Error('Discord webhook URL is not configured. Please set it in src/data/config.json');
       }
 
-      // Send Discord notification
-      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/discord-notify`;
-      const response = await fetch(functionUrl, {
+      // Truncate long values (Discord embed field limit is 1024 characters)
+      const truncate = (val: string, max = 1024) => (val || 'N/A').slice(0, max);
+
+      const payload = {
+        embeds: [{
+          title: 'New Crew Application',
+          color: 0x0ea5e9,
+          fields: [
+            { name: 'Username', value: truncate(formData.username), inline: true },
+            { name: 'Level', value: truncate(formData.level), inline: true },
+            { name: 'Bounty', value: truncate(formData.bounty), inline: true },
+            { name: 'Build', value: truncate(formData.build), inline: true },
+            { name: 'Division', value: truncate(formData.division), inline: true },
+            { name: 'Why should we accept them?', value: truncate(formData.reason || 'N/A', 1024), inline: false },
+          ],
+          footer: {
+            text: 'Shadow Tide Crew Application',
+          },
+        }],
+      };
+
+      console.log('Sending to Discord webhook:', JSON.stringify(payload, null, 2));
+
+      const response = await fetch(config.discord.webhookUrl, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          level: formData.level,
-          bounty: formData.bounty,
-          build: formData.build,
-          division: formData.division,
-          reason: formData.reason,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        console.error('Discord notification failed');
+        const errorText = await response.text();
+        console.error('Discord webhook error response:', errorText);
+        throw new Error(`Discord responded with status ${response.status}. Check the browser console (F12) for details.`);
       }
 
       setStatus('success');
       setFormData({ username: '', level: '', bounty: '', build: '', division: '', reason: '' });
-    } catch {
+    } catch (err) {
       setStatus('error');
-      setErrorMsg('Something went wrong. Please try again.');
+      setErrorMsg(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     }
   };
 

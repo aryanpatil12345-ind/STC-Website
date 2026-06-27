@@ -1,17 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Crown, Shield, User, Star, Search, Filter } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-
-interface CrewMember {
-  id: string;
-  name: string;
-  rank: 'leader' | 'officer' | 'member' | 'recruit';
-  role: string;
-  bounty: string;
-  fruit: string;
-  status: 'legendary' | 'active' | 'rising';
-  display_order: number;
-}
+import { crewMembers as staticCrewMembers } from '../data/crew';
 
 const rankConfig = {
   leader: { icon: Crown, label: 'Leader', color: 'bg-amber-500' },
@@ -21,25 +10,10 @@ const rankConfig = {
 };
 
 export default function CrewSection() {
-  const [members, setMembers] = useState<CrewMember[]>([]);
-  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    fetchMembers();
-  }, []);
-
-  async function fetchMembers() {
-    const { data } = await supabase
-      .from('crew_members')
-      .select('*')
-      .order('display_order', { ascending: true });
-    setMembers(data || []);
-    setLoading(false);
-  }
-
-  const filtered = members.filter((m) => {
+  const filtered = staticCrewMembers.filter((m) => {
     const matchesFilter = filter === 'all' || m.rank === filter;
     const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase()) ||
       m.fruit.toLowerCase().includes(search.toLowerCase());
@@ -85,8 +59,8 @@ export default function CrewSection() {
           </div>
         </div>
 
-        {loading ? (
-          <div className="text-center py-20 text-ocean-300">Loading crew roster...</div>
+        {filtered.length === 0 ? (
+          <div className="text-center py-20 text-ocean-300">No crew members match your search.</div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filtered.map((member) => {

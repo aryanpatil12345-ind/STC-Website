@@ -73,7 +73,8 @@ export default function OceanBackground() {
 
     resize();
     window.addEventListener('resize', resize);
-    draw();
+    // Defer canvas animation by one frame so initial page paint completes first
+    requestAnimationFrame(() => draw());
 
     return () => {
       window.removeEventListener('resize', resize);
